@@ -383,7 +383,11 @@
     <div class="weather-summary" id="weatherSummary"></div>
   </div>
 
-  <button class="center-btn" id="centerBtn" onclick="centerOnUser()">
+  <button class="center-btn visible" id="routeBtn" onclick="showRoute()" title="Toon route">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+  </button>
+
+  <button class="center-btn" id="centerBtn" onclick="centerOnUser()" style="bottom: 270px;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
   </button>
 
@@ -599,6 +603,20 @@
     // Initial draw without position
     drawElevationProfile(null);
 
+    // Test mode: add ?km=2 to URL to simulate position at km 2
+    const testKm = parseFloat(new URLSearchParams(window.location.search).get('km'));
+    if (!isNaN(testKm) && testKm >= 0 && testKm <= totalDist) {
+      setTimeout(() => {
+        const testPos = getPointAtDistance(testKm);
+        if (testPos) {
+          userMarker = createUserMarker(testPos);
+          userMarker.addTo(map);
+          map.setView(testPos, 15);
+          updateStats(testPos);
+        }
+      }, 500);
+    }
+
     // Init map
     const map = L.map('map', {
       zoomControl: true,
@@ -613,15 +631,15 @@
     // Route outline for visibility
     L.polyline(route, {
       color: '#e74c3c',
-      weight: 10,
+      weight: 14,
       opacity: 0.25,
       smoothFactor: 1
     }).addTo(map);
 
     const routeLine = L.polyline(route, {
-      color: '#e74c3c',
-      weight: 5,
-      opacity: 0.9,
+      color: '#d32f2f',
+      weight: 6,
+      opacity: 1,
       smoothFactor: 1
     }).addTo(map);
 
@@ -781,6 +799,11 @@
       document.getElementById('centerBtn').classList.remove('visible');
     }
 
+    function showRoute() {
+      followUser = false;
+      map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+    }
+
     function centerOnUser() {
       if (userMarker) {
         followUser = true;
@@ -804,6 +827,27 @@
           nearestPoint = proj;
         }
       }
+
+      // Distance to start
+      const distToStart = haversine(userPos[0], userPos[1], route[0][0], route[0][1]);
+
+      // If more than 500m from route, show distance to start instead
+      if (minDist > 0.5) {
+        if (distToStart < 1) {
+          document.getElementById('distance').textContent = Math.round(distToStart * 1000) + 'm';
+        } else {
+          document.getElementById('distance').textContent = distToStart.toFixed(1) + 'km';
+        }
+        document.getElementById('distance').parentElement.querySelector('.stat-label').textContent = 'tot start';
+        document.getElementById('remaining').textContent = totalDist.toFixed(1);
+        document.getElementById('currentEle').textContent = '-';
+        document.getElementById('climbLeft').textContent = Math.round(totalAscent) + 'm';
+        drawElevationProfile(null);
+        return;
+      }
+
+      // On route - show normal stats
+      document.getElementById('distance').parentElement.querySelector('.stat-label').textContent = 'gelopen';
 
       // Distance along route to nearest point
       const distOnRoute = cumDist[nearestIdx] +
