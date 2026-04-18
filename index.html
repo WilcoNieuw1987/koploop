@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Koploop 2026 - 10km</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      overflow: hidden;
+      height: 100dvh;
+    }
+
+    #map {
+      width: 100%;
+      height: 100dvh;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
+      padding: 12px 16px 32px;
+      pointer-events: none;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      background: #f97316;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .header .subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .stats-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 16px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-track {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-track.inactive {
+      background: #f97316;
+      color: #fff;
+    }
+
+    .btn-track.active {
+      background: rgba(249, 115, 22, 0.15);
+      color: #f97316;
+      border: 2px solid #f97316;
+    }
+
+    .btn-track:active {
+      transform: scale(0.98);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+
+    .km-marker-icon {
+      background: #1e293b;
+      border: 2px solid #f97316;
+      color: #f97316;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .start-finish-icon {
+      background: #f97316;
+      color: #fff;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+    }
+
+    .leaflet-control-zoom {
+      border: none !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+    }
+
+    .leaflet-control-zoom a {
+      background: rgba(15, 23, 42, 0.9) !important;
+      color: #e2e8f0 !important;
+      border: none !important;
+      width: 36px !important;
+      height: 36px !important;
+      line-height: 36px !important;
+      font-size: 18px !important;
+    }
+
+    .leaflet-control-zoom a:first-child {
+      border-radius: 10px 10px 0 0 !important;
+    }
+
+    .leaflet-control-zoom a:last-child {
+      border-radius: 0 0 10px 10px !important;
+    }
+
+    .center-btn {
+      position: fixed;
+      bottom: 160px;
+      right: 16px;
+      z-index: 1000;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border: none;
+      color: #e2e8f0;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .center-btn.visible {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">K</div>
+      <div>
+        <h1>Koploop 2026</h1>
+        <div class="subtitle">10 km - Amerongen</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <button class="center-btn" id="centerBtn" onclick="centerOnUser()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+  </button>
+
+  <div class="stats-bar">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-value" id="distance">-</div>
+        <div class="stat-label">km gelopen</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="remaining">10.0</div>
+        <div class="stat-label">km te gaan</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="nearest">-</div>
+        <div class="stat-label">afstand</div>
+      </div>
+    </div>
+    <button class="btn-track inactive" id="trackBtn" onclick="toggleTracking()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      Locatie volgen
+    </button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Route coordinates from GPX
+    const route = [
+      [52.00428,5.453506],[52.004517,5.453273],[52.004845,5.452873],[52.005057,5.452482],
+      [52.005132,5.452395],[52.005345,5.452487],[52.006107,5.450238],[52.005996,5.449723],
+      [52.004047,5.447891],[52.00557,5.44527],[52.007723,5.448028],[52.008346,5.447765],
+      [52.010365,5.444189],[52.010801,5.444616],[52.011283,5.444922],[52.011916,5.445149],
+      [52.01226,5.445222],[52.012898,5.445431],[52.013365,5.445526],[52.013459,5.44549],
+      [52.015378,5.445901],[52.015961,5.446086],[52.017131,5.446559],[52.017401,5.446705],
+      [52.017513,5.446917],[52.017666,5.446245],[52.017871,5.445874],[52.018352,5.445311],
+      [52.018461,5.444956],[52.01914,5.441692],[52.019321,5.441157],[52.019321,5.440937],
+      [52.019394,5.440781],[52.019368,5.440401],[52.019425,5.439927],[52.019524,5.439832],
+      [52.020085,5.438978],[52.020678,5.438354],[52.020839,5.438219],[52.021481,5.437455],
+      [52.021957,5.437005],[52.022167,5.43687],[52.022552,5.436812],[52.022875,5.436918],
+      [52.022923,5.436916],[52.022878,5.436181],[52.023648,5.436244],[52.026414,5.436642],
+      [52.026421,5.434502],[52.026966,5.434364],[52.027699,5.434083],[52.027988,5.43404],
+      [52.028593,5.434053],[52.029578,5.434336],[52.030186,5.434682],[52.030391,5.43471],
+      [52.031547,5.434568],[52.033009,5.434611],[52.033102,5.434597],[52.033579,5.436074],
+      [52.033659,5.436214],[52.034644,5.437546],[52.035637,5.439618],[52.035632,5.439638],
+      [52.035842,5.440068],[52.035217,5.440241],[52.035102,5.440637],[52.035025,5.440767],
+      [52.034589,5.441118],[52.034503,5.441161],[52.034228,5.441183],[52.034086,5.441361],
+      [52.033719,5.441477],[52.033598,5.441462],[52.033353,5.441571],[52.033143,5.441728],
+      [52.033091,5.441995],[52.033114,5.442468],[52.032989,5.443071],[52.032727,5.443795],
+      [52.032474,5.444206],[52.032327,5.444664],[52.032083,5.445203],[52.031845,5.445549],
+      [52.03173,5.44601],[52.031679,5.446045],[52.031504,5.446665],[52.031484,5.447188],
+      [52.030758,5.447166],[52.030541,5.447245],[52.030204,5.447264],[52.029788,5.447169],
+      [52.029415,5.447435],[52.029026,5.44759],[52.028734,5.447599],[52.028509,5.447565],
+      [52.027984,5.447636],[52.027747,5.447582],[52.02766,5.4475],[52.027475,5.447481],
+      [52.026566,5.447495],[52.025035,5.447378],[52.024346,5.44742],[52.024089,5.447363],
+      [52.023442,5.447311],[52.023402,5.447327],[52.023373,5.447358],[52.023328,5.447384],
+      [52.023258,5.447556],[52.023166,5.447612],[52.022869,5.447478],[52.022567,5.447498],
+      [52.022458,5.44741],[52.022355,5.447418],[52.02219,5.447362],[52.022095,5.447436],
+      [52.021941,5.447389],[52.022024,5.447565],[52.021941,5.447389],[52.021891,5.447481],
+      [52.021909,5.448443],[52.021989,5.450469],[52.021969,5.450736],[52.021714,5.452594],
+      [52.021737,5.452906],[52.022121,5.454474],[52.022131,5.454669],[52.021293,5.458086],
+      [52.02122,5.458537],[52.021292,5.45854],[52.016662,5.458435],[52.014211,5.457913],
+      [52.011656,5.456034],[52.011925,5.455353],[52.005996,5.449723],[52.006107,5.450238],
+      [52.005345,5.452487],[52.005132,5.452395],[52.005057,5.452482],[52.004845,5.452873],
+      [52.004517,5.453273],[52.004297,5.45349]
+    ];
+
+    // Calculate cumulative distances along route
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    const cumDist = [0];
+    for (let i = 1; i < route.length; i++) {
+      cumDist.push(cumDist[i-1] + haversine(route[i-1][0], route[i-1][1], route[i][0], route[i][1]));
+    }
+    const totalDist = cumDist[cumDist.length - 1];
+
+    // Init map
+    const map = L.map('map', {
+      zoomControl: true,
+      attributionControl: false
+    }).setView([52.020, 5.445], 14);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    // Draw route
+    const routeLine = L.polyline(route, {
+      color: '#f97316',
+      weight: 4,
+      opacity: 0.8,
+      smoothFactor: 1
+    }).addTo(map);
+
+    // Route outline for visibility
+    L.polyline(route, {
+      color: '#f97316',
+      weight: 8,
+      opacity: 0.2,
+      smoothFactor: 1
+    }).addTo(map);
+
+    map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+
+    // Km markers
+    function addKmMarkers() {
+      for (let km = 1; km <= 9; km++) {
+        const pos = getPointAtDistance(km);
+        if (pos) {
+          const icon = L.divIcon({
+            className: '',
+            html: `<div class="km-marker-icon">${km}</div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+          });
+          L.marker(pos, { icon, interactive: false }).addTo(map);
+        }
+      }
+    }
+
+    function getPointAtDistance(targetKm) {
+      for (let i = 1; i < cumDist.length; i++) {
+        if (cumDist[i] >= targetKm) {
+          const ratio = (targetKm - cumDist[i-1]) / (cumDist[i] - cumDist[i-1]);
+          return [
+            route[i-1][0] + ratio * (route[i][0] - route[i-1][0]),
+            route[i-1][1] + ratio * (route[i][1] - route[i-1][1])
+          ];
+        }
+      }
+      return null;
+    }
+
+    addKmMarkers();
+
+    // Start/Finish marker
+    const sfIcon = L.divIcon({
+      className: '',
+      html: '<div class="start-finish-icon">START / FINISH</div>',
+      iconSize: [100, 24],
+      iconAnchor: [50, 12]
+    });
+    L.marker(route[0], { icon: sfIcon, interactive: false }).addTo(map);
+
+    // User location
+    let userMarker = null;
+    let accuracyCircle = null;
+    let watchId = null;
+    let tracking = false;
+    let followUser = true;
+
+    function createUserMarker(latlng) {
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="
+          width: 18px; height: 18px;
+          background: #3b82f6;
+          border: 3px solid #fff;
+          border-radius: 50%;
+          box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), 0 0 24px rgba(59, 130, 246, 0.3);
+        "></div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+      });
+      return L.marker(latlng, { icon, zIndexOffset: 1000 });
+    }
+
+    function toggleTracking() {
+      const btn = document.getElementById('trackBtn');
+
+      if (tracking) {
+        stopTracking();
+        btn.className = 'btn-track inactive';
+        btn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Locatie volgen
+        `;
+      } else {
+        startTracking();
+        btn.className = 'btn-track active';
+        btn.innerHTML = `
+          <div class="pulse-dot"></div>
+          Locatie wordt gevolgd...
+        `;
+      }
+    }
+
+    function startTracking() {
+      if (!navigator.geolocation) {
+        alert('Locatie wordt niet ondersteund door je browser.');
+        return;
+      }
+
+      tracking = true;
+      followUser = true;
+      document.getElementById('centerBtn').classList.remove('visible');
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const latlng = [pos.coords.latitude, pos.coords.longitude];
+
+          if (userMarker) {
+            userMarker.setLatLng(latlng);
+          } else {
+            userMarker = createUserMarker(latlng);
+            userMarker.addTo(map);
+          }
+
+          if (accuracyCircle) {
+            accuracyCircle.setLatLng(latlng);
+            accuracyCircle.setRadius(pos.coords.accuracy);
+          } else {
+            accuracyCircle = L.circle(latlng, {
+              radius: pos.coords.accuracy,
+              fillColor: '#3b82f6',
+              fillOpacity: 0.1,
+              color: '#3b82f6',
+              weight: 1,
+              opacity: 0.3
+            }).addTo(map);
+          }
+
+          if (followUser) {
+            map.setView(latlng, Math.max(map.getZoom(), 15));
+          }
+
+          updateStats(latlng);
+        },
+        (err) => {
+          console.error('Locatie fout:', err);
+          alert('Kan locatie niet ophalen. Zorg dat locatie-toegang is ingeschakeld.');
+          toggleTracking();
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 5000,
+          timeout: 15000
+        }
+      );
+
+      map.on('dragstart', () => {
+        if (tracking) {
+          followUser = false;
+          document.getElementById('centerBtn').classList.add('visible');
+        }
+      });
+    }
+
+    function stopTracking() {
+      tracking = false;
+      followUser = false;
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+      document.getElementById('centerBtn').classList.remove('visible');
+    }
+
+    function centerOnUser() {
+      if (userMarker) {
+        followUser = true;
+        map.setView(userMarker.getLatLng(), Math.max(map.getZoom(), 15));
+        document.getElementById('centerBtn').classList.remove('visible');
+      }
+    }
+
+    function updateStats(userPos) {
+      // Find nearest point on route
+      let minDist = Infinity;
+      let nearestIdx = 0;
+      let nearestPoint = null;
+
+      for (let i = 0; i < route.length - 1; i++) {
+        const proj = projectOnSegment(userPos, route[i], route[i+1]);
+        const d = haversine(userPos[0], userPos[1], proj.point[0], proj.point[1]);
+        if (d < minDist) {
+          minDist = d;
+          nearestIdx = i;
+          nearestPoint = proj;
+        }
+      }
+
+      // Distance along route to nearest point
+      const distOnRoute = cumDist[nearestIdx] +
+        haversine(route[nearestIdx][0], route[nearestIdx][1], nearestPoint.point[0], nearestPoint.point[1]);
+
+      const distKm = distOnRoute;
+      const remainKm = Math.max(0, totalDist - distOnRoute);
+      const nearDist = minDist;
+
+      document.getElementById('distance').textContent = distKm.toFixed(1);
+      document.getElementById('remaining').textContent = remainKm.toFixed(1);
+
+      if (nearDist < 1) {
+        document.getElementById('nearest').textContent = Math.round(nearDist * 1000) + 'm';
+      } else {
+        document.getElementById('nearest').textContent = nearDist.toFixed(1) + 'km';
+      }
+    }
+
+    function projectOnSegment(p, a, b) {
+      const dx = b[0] - a[0];
+      const dy = b[1] - a[1];
+      if (dx === 0 && dy === 0) return { point: a, t: 0 };
+
+      let t = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy);
+      t = Math.max(0, Math.min(1, t));
+
+      return {
+        point: [a[0] + t * dx, a[1] + t * dy],
+        t: t
+      };
+    }
+  </script>
+</body>
+</html>
