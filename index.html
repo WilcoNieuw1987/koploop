@@ -10,8 +10,8 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: #f5f5f5;
+      color: #1e293b;
       overflow: hidden;
       height: 100dvh;
     }
@@ -27,7 +27,7 @@
       left: 0;
       right: 0;
       z-index: 1000;
-      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
       padding: 12px 16px 32px;
       pointer-events: none;
     }
@@ -54,13 +54,13 @@
     .header h1 {
       font-size: 18px;
       font-weight: 700;
-      color: #fff;
+      color: #1e293b;
       line-height: 1.1;
     }
 
     .header .subtitle {
       font-size: 12px;
-      color: #94a3b8;
+      color: #64748b;
       font-weight: 400;
     }
 
@@ -70,19 +70,19 @@
       left: 0;
       right: 0;
       z-index: 1000;
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(255, 255, 255, 0.97);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 12px 16px;
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      border-top: 1px solid rgba(0,0,0,0.1);
+      padding: 10px 16px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
     }
 
     .stats-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 10px;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 8px;
     }
 
     .stat {
@@ -90,16 +90,32 @@
     }
 
     .stat-value {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
-      color: #fff;
+      color: #1e293b;
     }
 
     .stat-label {
-      font-size: 11px;
-      color: #64748b;
+      font-size: 10px;
+      color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    .elevation-profile {
+      position: relative;
+      width: 100%;
+      height: 70px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .elevation-profile canvas {
+      width: 100%;
+      height: 100%;
     }
 
     .btn-track {
@@ -146,9 +162,9 @@
     }
 
     .km-marker-icon {
-      background: #1e293b;
-      border: 2px solid #f97316;
-      color: #f97316;
+      background: #fff;
+      border: 2px solid #e74c3c;
+      color: #e74c3c;
       border-radius: 50%;
       width: 28px;
       height: 28px;
@@ -178,8 +194,8 @@
     }
 
     .leaflet-control-zoom a {
-      background: rgba(15, 23, 42, 0.9) !important;
-      color: #e2e8f0 !important;
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: #1e293b !important;
       border: none !important;
       width: 36px !important;
       height: 36px !important;
@@ -197,15 +213,15 @@
 
     .center-btn {
       position: fixed;
-      bottom: 160px;
+      bottom: 220px;
       right: 16px;
       z-index: 1000;
       width: 44px;
       height: 44px;
       border-radius: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      border: none;
-      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0,0,0,0.1);
+      color: #1e293b;
       font-size: 20px;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -216,6 +232,127 @@
 
     .center-btn.visible {
       display: flex;
+    }
+
+    .weather-btn {
+      position: fixed;
+      bottom: 220px;
+      left: 16px;
+      z-index: 1000;
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0,0,0,0.1);
+      color: #1e293b;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .weather-panel {
+      position: fixed;
+      bottom: 270px;
+      left: 16px;
+      right: 16px;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      padding: 16px;
+      display: none;
+    }
+
+    .weather-panel.visible {
+      display: block;
+    }
+
+    .weather-panel h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #1e293b;
+    }
+
+    .weather-panel .weather-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+
+    .rain-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 60px;
+      margin-bottom: 6px;
+    }
+
+    .rain-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .rain-bar {
+      width: 100%;
+      border-radius: 3px 3px 0 0;
+      min-height: 1px;
+      transition: height 0.3s;
+    }
+
+    .rain-bar.dry { background: #d1fae5; }
+    .rain-bar.light { background: #93c5fd; }
+    .rain-bar.moderate { background: #3b82f6; }
+    .rain-bar.heavy { background: #1d4ed8; }
+
+    .rain-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .weather-summary {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .weather-summary.dry {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .weather-summary.rain {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .weather-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
     }
   </style>
 </head>
@@ -232,6 +369,20 @@
 
   <div id="map"></div>
 
+  <button class="weather-btn" id="weatherBtn" onclick="toggleWeather()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="4"/></svg>
+    <span id="weatherBtnText">Weer laden...</span>
+  </button>
+
+  <div class="weather-panel" id="weatherPanel">
+    <button class="weather-close" onclick="toggleWeather()">&times;</button>
+    <h3>Neerslagverwachting</h3>
+    <div class="weather-sub">Komende 2 uur - Amerongen</div>
+    <div class="rain-chart" id="rainChart"></div>
+    <div class="rain-times" id="rainTimes"></div>
+    <div class="weather-summary" id="weatherSummary"></div>
+  </div>
+
   <button class="center-btn" id="centerBtn" onclick="centerOnUser()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
   </button>
@@ -240,16 +391,23 @@
     <div class="stats-grid">
       <div class="stat">
         <div class="stat-value" id="distance">-</div>
-        <div class="stat-label">km gelopen</div>
+        <div class="stat-label">gelopen</div>
       </div>
       <div class="stat">
         <div class="stat-value" id="remaining">10.0</div>
-        <div class="stat-label">km te gaan</div>
+        <div class="stat-label">te gaan</div>
       </div>
       <div class="stat">
-        <div class="stat-value" id="nearest">-</div>
-        <div class="stat-label">afstand</div>
+        <div class="stat-value" id="currentEle">-</div>
+        <div class="stat-label">hoogte</div>
       </div>
+      <div class="stat">
+        <div class="stat-value" id="climbLeft">-</div>
+        <div class="stat-label">stijging</div>
+      </div>
+    </div>
+    <div class="elevation-profile">
+      <canvas id="elevationCanvas"></canvas>
     </div>
     <button class="btn-track inactive" id="trackBtn" onclick="toggleTracking()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
@@ -308,11 +466,138 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
+    // Elevation data per route point (from Open-Meteo API)
+    const elevation = [
+      16,16,16,15,15,15,23,24,18,17,16,24,20,20,22,28,28,29,33,33,
+      46,54,53,53,51,51,51,50,44,43,31,31,31,31,24,24,24,29,27,36,
+      30,30,21,21,21,18,22,18,17,17,18,18,18,18,21,21,18,12,12,14,
+      14,10,10,10,13,12,12,12,8,8,8,12,12,12,12,11,11,11,9,11,
+      14,14,11,11,11,11,8,8,8,8,8,8,8,8,8,8,8,8,8,13,
+      18,17,17,20,20,20,20,20,23,23,23,23,26,26,26,26,26,25,26,26,
+      25,25,25,21,21,23,23,25,25,25,67,57,59,57,24,23,15,15,15,16,
+      16,16
+    ];
+
     const cumDist = [0];
     for (let i = 1; i < route.length; i++) {
       cumDist.push(cumDist[i-1] + haversine(route[i-1][0], route[i-1][1], route[i][0], route[i][1]));
     }
     const totalDist = cumDist[cumDist.length - 1];
+
+    // Calculate total ascent/descent
+    let totalAscent = 0, totalDescent = 0;
+    for (let i = 1; i < elevation.length; i++) {
+      const diff = elevation[i] - elevation[i-1];
+      if (diff > 0) totalAscent += diff;
+      else totalDescent += Math.abs(diff);
+    }
+
+    // Draw elevation profile
+    function drawElevationProfile(progressRatio) {
+      const canvas = document.getElementById('elevationCanvas');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const w = rect.width;
+      const h = rect.height;
+
+      const minEle = Math.min(...elevation) - 2;
+      const maxEle = Math.max(...elevation) + 5;
+      const padding = { top: 14, bottom: 18, left: 0, right: 0 };
+      const pw = w - padding.left - padding.right;
+      const ph = h - padding.top - padding.bottom;
+
+      function x(i) { return padding.left + (cumDist[i] / totalDist) * pw; }
+      function y(ele) { return padding.top + ph - ((ele - minEle) / (maxEle - minEle)) * ph; }
+
+      // Fill area
+      ctx.beginPath();
+      ctx.moveTo(x(0), y(minEle));
+      for (let i = 0; i < elevation.length; i++) {
+        ctx.lineTo(x(i), y(elevation[i]));
+      }
+      ctx.lineTo(x(elevation.length - 1), y(minEle));
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(0, padding.top, 0, h - padding.bottom);
+      grad.addColorStop(0, 'rgba(231, 76, 60, 0.3)');
+      grad.addColorStop(1, 'rgba(231, 76, 60, 0.05)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Line
+      ctx.beginPath();
+      for (let i = 0; i < elevation.length; i++) {
+        if (i === 0) ctx.moveTo(x(i), y(elevation[i]));
+        else ctx.lineTo(x(i), y(elevation[i]));
+      }
+      ctx.strokeStyle = '#e74c3c';
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // Km labels at bottom
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      for (let km = 0; km <= 10; km += 2) {
+        const xKm = padding.left + (km / totalDist) * pw;
+        ctx.fillText(km + 'km', xKm, h - 3);
+      }
+
+      // Min/max labels
+      ctx.fillStyle = '#64748b';
+      ctx.font = '9px -apple-system, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(Math.round(maxEle) + 'm', 4, padding.top + 10);
+      ctx.fillText(Math.round(minEle) + 'm', 4, h - padding.bottom - 2);
+
+      // Position marker
+      if (progressRatio !== null && progressRatio >= 0) {
+        const pxX = padding.left + progressRatio * pw;
+        // Interpolate elevation at this point
+        let eleAtPos = elevation[0];
+        const distAtPos = progressRatio * totalDist;
+        for (let i = 1; i < cumDist.length; i++) {
+          if (cumDist[i] >= distAtPos) {
+            const t = (distAtPos - cumDist[i-1]) / (cumDist[i] - cumDist[i-1]);
+            eleAtPos = elevation[i-1] + t * (elevation[i] - elevation[i-1]);
+            break;
+          }
+        }
+        const pxY = y(eleAtPos);
+
+        // Vertical line
+        ctx.beginPath();
+        ctx.moveTo(pxX, padding.top);
+        ctx.lineTo(pxX, h - padding.bottom);
+        ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Dot
+        ctx.beginPath();
+        ctx.arc(pxX, pxY, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#3b82f6';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Elevation label at dot
+        ctx.fillStyle = '#3b82f6';
+        ctx.font = 'bold 10px -apple-system, sans-serif';
+        ctx.textAlign = pxX > w / 2 ? 'right' : 'left';
+        const labelX = pxX > w / 2 ? pxX - 8 : pxX + 8;
+        ctx.fillText(Math.round(eleAtPos) + 'm', labelX, pxY - 8);
+      }
+    }
+
+    // Initial draw without position
+    drawElevationProfile(null);
 
     // Init map
     const map = L.map('map', {
@@ -320,23 +605,23 @@
       attributionControl: false
     }).setView([52.020, 5.445], 14);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19
     }).addTo(map);
 
     // Draw route
-    const routeLine = L.polyline(route, {
-      color: '#f97316',
-      weight: 4,
-      opacity: 0.8,
+    // Route outline for visibility
+    L.polyline(route, {
+      color: '#e74c3c',
+      weight: 10,
+      opacity: 0.25,
       smoothFactor: 1
     }).addTo(map);
 
-    // Route outline for visibility
-    L.polyline(route, {
-      color: '#f97316',
-      weight: 8,
-      opacity: 0.2,
+    const routeLine = L.polyline(route, {
+      color: '#e74c3c',
+      weight: 5,
+      opacity: 0.9,
       smoothFactor: 1
     }).addTo(map);
 
@@ -526,17 +811,119 @@
 
       const distKm = distOnRoute;
       const remainKm = Math.max(0, totalDist - distOnRoute);
-      const nearDist = minDist;
+      const progressRatio = Math.min(1, distOnRoute / totalDist);
 
       document.getElementById('distance').textContent = distKm.toFixed(1);
       document.getElementById('remaining').textContent = remainKm.toFixed(1);
 
-      if (nearDist < 1) {
-        document.getElementById('nearest').textContent = Math.round(nearDist * 1000) + 'm';
-      } else {
-        document.getElementById('nearest').textContent = nearDist.toFixed(1) + 'km';
+      // Interpolate current elevation
+      let curEle = elevation[0];
+      for (let i = 1; i < cumDist.length; i++) {
+        if (cumDist[i] >= distOnRoute) {
+          const t = (distOnRoute - cumDist[i-1]) / (cumDist[i] - cumDist[i-1]);
+          curEle = elevation[i-1] + t * (elevation[i] - elevation[i-1]);
+          break;
+        }
+      }
+      document.getElementById('currentEle').textContent = Math.round(curEle) + 'm';
+
+      // Calculate remaining ascent from current position
+      let remainAscent = 0;
+      for (let i = nearestIdx + 1; i < elevation.length; i++) {
+        const diff = elevation[i] - elevation[i-1];
+        if (diff > 0) remainAscent += diff;
+      }
+      document.getElementById('climbLeft').textContent = Math.round(remainAscent) + 'm';
+
+      // Update elevation profile with position
+      drawElevationProfile(progressRatio);
+    }
+
+    // Weather functionality
+    let weatherData = null;
+    let weatherPanelOpen = false;
+
+    function toggleWeather() {
+      const panel = document.getElementById('weatherPanel');
+      weatherPanelOpen = !weatherPanelOpen;
+      panel.classList.toggle('visible', weatherPanelOpen);
+    }
+
+    async function fetchWeather() {
+      try {
+        // Center of route for weather data
+        const lat = 52.020;
+        const lon = 5.445;
+        const res = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&minutely_15=precipitation&timezone=Europe/Amsterdam&forecast_minutely_15=8`
+        );
+        const data = await res.json();
+
+        if (data.minutely_15 && data.minutely_15.precipitation) {
+          const precip = data.minutely_15.precipitation.slice(0, 8); // 2 hours in 15-min slots
+          const times = data.minutely_15.time.slice(0, 8);
+          renderWeather(precip, times);
+        }
+      } catch (e) {
+        document.getElementById('weatherBtnText').textContent = 'Weer niet beschikbaar';
       }
     }
+
+    function renderWeather(precip, times) {
+      const maxPrecip = Math.max(...precip, 0.5);
+      const chart = document.getElementById('rainChart');
+      const timesRow = document.getElementById('rainTimes');
+      const summary = document.getElementById('weatherSummary');
+      const btnText = document.getElementById('weatherBtnText');
+
+      const totalRain = precip.reduce((a, b) => a + b, 0);
+      const hasRain = totalRain > 0;
+      const maxRainVal = Math.max(...precip);
+
+      // Update button
+      if (!hasRain) {
+        btnText.textContent = 'Droog';
+        document.getElementById('weatherBtn').querySelector('svg').outerHTML =
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+      } else {
+        btnText.textContent = 'Regen verwacht';
+        document.getElementById('weatherBtn').querySelector('svg').outerHTML =
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 13v8M8 13v8M12 15v8M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg>';
+      }
+
+      // Render bars
+      chart.innerHTML = precip.map((p, i) => {
+        const height = Math.max(2, (p / maxPrecip) * 55);
+        let cls = 'dry';
+        if (p > 2) cls = 'heavy';
+        else if (p > 0.5) cls = 'moderate';
+        else if (p > 0) cls = 'light';
+        return `<div class="rain-bar-wrap"><div class="rain-bar ${cls}" style="height:${height}px" title="${p.toFixed(1)} mm"></div></div>`;
+      }).join('');
+
+      // Render times
+      const timeLabels = times.map(t => {
+        const d = new Date(t);
+        return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+      });
+      timesRow.innerHTML = `<span>${timeLabels[0]}</span><span>${timeLabels[Math.floor(timeLabels.length/2)]}</span><span>${timeLabels[timeLabels.length-1]}</span>`;
+
+      // Summary
+      if (!hasRain) {
+        summary.className = 'weather-summary dry';
+        summary.textContent = 'Geen neerslag verwacht de komende 2 uur';
+      } else if (maxRainVal > 2) {
+        summary.className = 'weather-summary rain';
+        summary.textContent = 'Flinke buien verwacht! Bereid je voor op regen';
+      } else {
+        summary.className = 'weather-summary rain';
+        summary.textContent = 'Lichte neerslag verwacht';
+      }
+    }
+
+    // Fetch weather on load and refresh every 5 minutes
+    fetchWeather();
+    setInterval(fetchWeather, 5 * 60 * 1000);
 
     function projectOnSegment(p, a, b) {
       const dx = b[0] - a[0];
